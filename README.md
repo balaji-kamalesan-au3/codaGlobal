@@ -11,6 +11,7 @@ Functionalities of the app:
     => Table Listing all participating players (Pagination used limited to 10)
     => Opposing Bet generated
     => Winner Declared based on Random Number and price is doubled
+    => Hosted in Heroku
 
 I have hosted the application in heroku you can see the live app here :
     https://codaglobalapp1.herokuapp.com/
