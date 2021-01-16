@@ -36,7 +36,7 @@ export default function BetComponent(props) {
                    </div>
                    <div>
                         
-                   <div clasName="price">Price : {randomNumber === user.Bet?user.Price*2:user.Price}</div>
+                   <div clasName="price">Price : {randomNumber === Number(user.Bet)?Number(user.Price)*2:user.Price}</div>
                        <div clasName="bet">Bet : {user.Bet}</div>
                        {randomNumber === Number(user.Bet) && <h3 style={{fontWeight: "bold", color : "green"}}>Winner</h3>}
                        {randomNumber !== Number(user.Bet) && <div style={{fontWeight: "bold", color : "red"}}>Loser</div>}
