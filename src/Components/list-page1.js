@@ -1,55 +1,76 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import classNames from 'classnames'
-import CasinoIcon from '@material-ui/icons/Casino';
+import { Grid } from '@material-ui/core';
+import React from 'react'
+import DataGridDemo from './tableComponent';
+import Card from './Card'
+import BetComponent from './BetComponent';
 
-const pageStyles = makeStyles((theme) => ({
-    root : {
-        flexGrow: 1,
-    },
-    paper: {
-        padding: theme.spacing(2),
-        textAlign: 'center',
-        color: theme.palette.text.secondary,
-        minHeight: "100vh"
-      },
-    
-    sidebar : {
-        backgroundColor: "#384B52",
-        color : "white"
-    },
-    icon : {
-        fontSize : "100rm"
+class ListPage extends React.Component {
+    constructor(props){
+        super(props);
+        this.state ={
+            name :"Balaji",
+            users : [],
+            loading : true,
+            selectedRows : [],
+            selectedUsers : [],
+            startBet : false
+        }
     }
-}))
-
-export default function ListPage(){
-
-
-    const classes = pageStyles();
-    const [users,setUsers] = useState([]);
-    const [mydata,setData] = useState([])
-    useEffect(() => {
-        fetch("https://s3-ap-southeast-1.amazonaws.com/he-public-data/users49b8675.json")
+ 
+    componentDidMount(){
+        fetch("https://s3-ap-southeast-1.amazonaws.com/he-public-data/bets7747a43.json")
             .then(data => data.json())
-            .then(data => {setUsers(data); setData(data)});
-    },[])
-    return (
-        <div className={classes.root}>
-            <Grid container spacing={0}>
-                <Grid item xs={3}>
-                    <Paper className={ classNames(classes.sidebar, classes.paper)  } elevation={1}>
-                      <CasinoIcon style={{fontSize : "500%",WebkitTransform : 'rotate(45deg)' }} /> 
+            .then((data) => {
+                this.setState({users : data}, () => {this.modifyData();})
+            })
+    }
+    
+    setSelectedRows = (arr) => {
+        this.setState({selectedRows : arr},this.setSelectedUsers())
+    }
 
-                      <h4>Playing 9</h4>
-                    </Paper>
+    modifyData(){
+        let id =0;
+        let newObj = [];
+        newObj = this.state.users.map(x => {
+            let tempObj = {id : id++, ...x}
+            return tempObj
+        })
+        this.setState({users : newObj,loading : false}, () => console.log(this.state))
+    }
+
+    startBet(){
+        this.setState({startBet : true})
+    }
+ 
+    setSelectedUsers(){
+        let newObj = [];
+        newObj = this.state.selectedRows.map(id => {return this.state.users[Number(id)]})
+        this.setState({selectedUsers : newObj})
+    }
+    render() {
+        console.log(this.state)
+        return (
+            
+            <Grid container>
+                 {
+                    this.state.startBet && <div> <BetComponent selectedRows = {this.state.selectedRows} users = {this.state.users} />  </div>
+                }
+                <Grid item xs={3} className="sideBar">
+                 {!this.state.startBet && <Card selectedRows = {this.state.selectedRows} users = {this.state.users} 
+                    startBet = {() => this.startBet()}
+                 /> }
                 </Grid>
                 <Grid item xs={9}>
-                    <Paper className={classes.paper} elevation={1}>xs=12</Paper>
+                    <div> 
+                        {!this.state.loading && !this.state.startBet && <DataGridDemo rows={this.state.users} onRowChange = {(arr) => this.setSelectedRows(arr.rowIds)}  />} 
+                    </div>
                 </Grid>
+               
             </Grid>
-        </div>
-    )
-}
+              
+        )
+    }
+  }
+
+  export default ListPage
